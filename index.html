@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Builder Friend 🤝 - Sentient AI Code Generator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <img src="https://i.postimg.cc/9fMR74q0/20250904-032927.png" alt="Sentient Logo">
+      </div>
+      <h1>Builder Friend</h1>
+      <p class="subtitle">Transform your ideas into complete code with Sentient AI</p>
+    </header>
+
+    <div class="main-card">
+      <div class="input-section">
+        <label for="ideaInput">Describe your idea</label>
+        <textarea 
+          id="ideaInput" 
+          placeholder="Example: Create a landing page for a coffee shop with a hero section, menu cards, and contact form."
+        ></textarea>
+        <div class="button-container">
+          <button class="generate-btn" id="generateBtn">Generate Code</button>
+          <button class="clear-btn" id="clearBtn">Clear All</button>
+        </div>
+      </div>
+
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Generating your code with Sentient AI...</p>
+      </div>
+
+      <div class="error-message" id="errorMessage">
+        <h3>Error</h3>
+        <p id="errorText"></p>
+      </div>
+
+      <div class="output-section" id="outputSection">
+        <div class="output-header">
+          <h2>Generated Code</h2>
+          <button class="copy-btn" id="copyBtn">Copy Code</button>
+        </div>
+        <div class="code-container">
+          <pre id="codeOutput"></pre>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>Powered by Sentient AI & Gemini 1.5 Pro</p>
+      <p style="margin-top: 10px; font-size: 0.9em;">Built for creators and developers</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
