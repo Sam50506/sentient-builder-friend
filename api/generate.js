@@ -7,8 +7,8 @@ export default async function handler(req, res) {
   if (!idea) return res.status(400).json({ error: "Missing idea" });
 
   const API_KEY = process.env.GEMINI_KEY;
-  const endpoint = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`;
-  const prompt = `Write full working code for: ${idea}. Return only the code (no explanations).`;
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+  const prompt = `Write full working HTML, CSS, and JS code for: ${idea}. Return only the code.`;
 
   try {
     const response = await fetch(endpoint, {
