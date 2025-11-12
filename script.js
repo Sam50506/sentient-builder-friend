@@ -1,5 +1,5 @@
-const API_KEY = "AIzaSyAf8yQTiE8jsTQIX3Gl6Y_UjUpK7ZVBzX0";
-const API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
+const API_KEY = "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";
+const API_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 
 async function generateCode(idea) {
   try {
@@ -13,12 +13,18 @@ Requirements:
 
     const response = await fetch(API_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${API_KEY}`,
+      },
       body: JSON.stringify({
-        contents: [{
-          parts: [{ text: prompt }]
-        }]
-      })
+        model: "llama-3.1-8b-instant",
+        messages: [
+          { role: "system", content: "You are a helpful AI that generates full, working website code from user ideas." },
+          { role: "user", content: prompt }
+        ],
+        temperature: 0.7
+      }),
     });
 
     if (!response.ok) {
@@ -27,11 +33,11 @@ Requirements:
     }
 
     const data = await response.json();
-    let result = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    
-    // Remove markdown code blocks
-    result = result.replace(/```html\n?/g, '').replace(/```javascript\n?/g, '').replace(/```css\n?/g, '').replace(/```\n?/g, '').trim();
-    
+    let result = data.choices?.[0]?.message?.content || "";
+
+    // Remove markdown formatting like ```html or ```
+    result = result.replace(/```[a-z]*\n?/g, "").replace(/```/g, "").trim();
+
     return result;
   } catch (err) {
     console.error("Generation error:", err);
@@ -50,26 +56,26 @@ document.getElementById("generateBtn").addEventListener("click", async () => {
 
   if (!idea) {
     errorText.textContent = "Please enter an idea first!";
-    errorMessage.classList.add("active");
+    errorMessage.style.display = "block";
     return;
   }
 
-  errorMessage.classList.remove("active");
-  outputSection.classList.remove("active");
-  loading.classList.add("active");
+  errorMessage.style.display = "none";
+  outputSection.style.display = "none";
+  loading.style.display = "block";
   generateBtn.disabled = true;
 
   try {
     const code = await generateCode(idea);
     output.textContent = code;
-    outputSection.classList.add("active");
-    outputSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    outputSection.style.display = "block";
+    outputSection.scrollIntoView({ behavior: "smooth", block: "nearest" });
   } catch (e) {
     errorText.textContent = "Failed to generate code: " + e.message;
-    errorMessage.classList.add("active");
+    errorMessage.style.display = "block";
     console.error("Full error:", e);
   } finally {
-    loading.classList.remove("active");
+    loading.style.display = "none";
     generateBtn.disabled = false;
   }
 });
@@ -77,20 +83,20 @@ document.getElementById("generateBtn").addEventListener("click", async () => {
 document.getElementById("clearBtn").addEventListener("click", () => {
   document.getElementById("ideaInput").value = "";
   document.getElementById("codeOutput").textContent = "";
-  document.getElementById("outputSection").classList.remove("active");
-  document.getElementById("errorMessage").classList.remove("active");
+  document.getElementById("outputSection").style.display = "none";
+  document.getElementById("errorMessage").style.display = "none";
   document.getElementById("ideaInput").focus();
 });
 
 document.getElementById("copyBtn").addEventListener("click", () => {
   const code = document.getElementById("codeOutput").textContent;
   const copyBtn = document.getElementById("copyBtn");
-  
+
   navigator.clipboard.writeText(code).then(() => {
     const originalText = copyBtn.textContent;
     copyBtn.textContent = "Copied!";
     copyBtn.classList.add("copied");
-    
+
     setTimeout(() => {
       copyBtn.textContent = originalText;
       copyBtn.classList.remove("copied");
@@ -100,6 +106,6 @@ document.getElementById("copyBtn").addEventListener("click", () => {
   });
 });
 
-window.addEventListener('load', () => {
-  document.getElementById('ideaInput').focus();
+window.addEventListener("load", () => {
+  document.getElementById("ideaInput").focus();
 });
