@@ -1,40 +1,40 @@
 const API_KEY = "AIzaSyAf8yQTiE8jsTQIX3Gl6Y_UjUpK7ZVBzX0";
+const API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
 
 async function generateCode(idea) {
-  // Test with the simplest working model first
-  const API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
-  
   try {
-    console.log("Testing API connection...");
-    console.log("Endpoint:", API_ENDPOINT);
-    
+    const prompt = `Generate complete, production-ready code for: ${idea}
+
+Requirements:
+- Output ONLY the code, no explanations
+- For web projects: single HTML file with embedded CSS and JavaScript
+- Make it fully functional and responsive
+- Add brief comments where helpful`;
+
     const response = await fetch(API_ENDPOINT, {
       method: "POST",
-      headers: { 
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         contents: [{
-          parts: [{ text: idea }]
+          parts: [{ text: prompt }]
         }]
       })
     });
 
-    console.log("Response status:", response.status);
-    
-    const data = await response.json();
-    console.log("Full response:", data);
-
     if (!response.ok) {
-      throw new Error(data.error?.message || JSON.stringify(data));
+      const err = await response.json();
+      throw new Error(err.error?.message || `API Error: ${response.status}`);
     }
 
+    const data = await response.json();
     let result = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    result = result.replace(/```[\w]*\n?/g, '').replace(/```/g, '').trim();
+    
+    // Remove markdown code blocks
+    result = result.replace(/```html\n?/g, '').replace(/```javascript\n?/g, '').replace(/```css\n?/g, '').replace(/```\n?/g, '').trim();
     
     return result;
   } catch (err) {
-    console.error("Error details:", err);
+    console.error("Generation error:", err);
     throw err;
   }
 }
@@ -67,6 +67,7 @@ document.getElementById("generateBtn").addEventListener("click", async () => {
   } catch (e) {
     errorText.textContent = "Failed to generate code: " + e.message;
     errorMessage.classList.add("active");
+    console.error("Full error:", e);
   } finally {
     loading.classList.remove("active");
     generateBtn.disabled = false;
