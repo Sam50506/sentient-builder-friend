@@ -1,10 +1,10 @@
 const API_KEY = "AIzaSyAf8yQTiE8jsTQIX3Gl6Y_UjUpK7ZVBzX0";
-const API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
+const API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
 async function generateCode(idea) {
   try {
     const prompt = `Write full working code for: ${idea}. Return only code (no explanations or markdown).`;
-    const response = await fetch(API_ENDPOINT, {  // Changed from 'endpoint' to 'API_ENDPOINT'
+    const response = await fetch(API_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
