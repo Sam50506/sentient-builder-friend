@@ -1,9 +1,10 @@
 const API_KEY = "AIzaSyAf8yQTiE8jsTQIX3Gl6Y_UjUpK7ZVBzX0";
 const API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
+
 async function generateCode(idea) {
   try {
     const prompt = `Write full working code for: ${idea}. Return only code (no explanations or markdown).`;
-    const response = await fetch(endpoint, {
+    const response = await fetch(API_ENDPOINT, {  // Changed from 'endpoint' to 'API_ENDPOINT'
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -30,11 +31,55 @@ async function generateCode(idea) {
 document.getElementById("generateBtn").addEventListener("click", async () => {
   const idea = document.getElementById("ideaInput").value.trim();
   const output = document.getElementById("codeOutput");
-  output.textContent = "Generating...";
+  const loading = document.getElementById("loading");
+  const outputSection = document.getElementById("outputSection");
+  const errorMessage = document.getElementById("errorMessage");
+  const errorText = document.getElementById("errorText");
+  const generateBtn = document.getElementById("generateBtn");
+
+  if (!idea) {
+    errorText.textContent = "Please enter an idea first!";
+    errorMessage.classList.add("active");
+    return;
+  }
+
+  errorMessage.classList.remove("active");
+  outputSection.classList.remove("active");
+  loading.classList.add("active");
+  generateBtn.disabled = true;
+
   try {
     const code = await generateCode(idea);
     output.textContent = code;
+    outputSection.classList.add("active");
   } catch (e) {
-    output.textContent = "Error: " + e.message;
+    errorText.textContent = "Failed to generate code: " + e.message;
+    errorMessage.classList.add("active");
+  } finally {
+    loading.classList.remove("active");
+    generateBtn.disabled = false;
   }
+});
+
+document.getElementById("clearBtn").addEventListener("click", () => {
+  document.getElementById("ideaInput").value = "";
+  document.getElementById("codeOutput").textContent = "";
+  document.getElementById("outputSection").classList.remove("active");
+  document.getElementById("errorMessage").classList.remove("active");
+});
+
+document.getElementById("copyBtn").addEventListener("click", () => {
+  const code = document.getElementById("codeOutput").textContent;
+  const copyBtn = document.getElementById("copyBtn");
+  
+  navigator.clipboard.writeText(code).then(() => {
+    const originalText = copyBtn.textContent;
+    copyBtn.textContent = "Copied!";
+    copyBtn.classList.add("copied");
+    
+    setTimeout(() => {
+      copyBtn.textContent = originalText;
+      copyBtn.classList.remove("copied");
+    }, 2000);
+  });
 });
