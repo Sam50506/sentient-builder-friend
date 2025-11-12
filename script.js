@@ -1,5 +1,5 @@
 const API_KEY = "AIzaSyAf8yQTiE8jsTQIX3Gl6Y_UjUpK7ZVBzX0";
-const API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`;
+const API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
 
 async function generateCode(idea) {
   try {
@@ -32,7 +32,7 @@ Requirements:
     let result = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
     
     // Remove markdown code blocks if present
-    result = result.replace(/```html\n?/g, '').replace(/```javascript\n?/g, '').replace(/```\n?/g, '').trim();
+    result = result.replace(/```html\n?/g, '').replace(/```javascript\n?/g, '').replace(/```css\n?/g, '').replace(/```\n?/g, '').trim();
     
     return result;
   } catch (err) {
@@ -69,6 +69,7 @@ document.getElementById("generateBtn").addEventListener("click", async () => {
   } catch (e) {
     errorText.textContent = "Failed to generate code: " + e.message;
     errorMessage.classList.add("active");
+    console.error("Full error:", e);
   } finally {
     loading.classList.remove("active");
     generateBtn.disabled = false;
@@ -101,7 +102,6 @@ document.getElementById("copyBtn").addEventListener("click", () => {
   });
 });
 
-// Focus input on load
 window.addEventListener('load', () => {
   document.getElementById('ideaInput').focus();
 });
